@@ -1,4 +1,12 @@
 <template>
+  <!-- <Button>hey</Button> -->
+  <Layout>
+    <template v-slot:header> En-tête </template>
+    <template v-slot:aside> Barre latérale </template>
+    <template v-slot:main> Contenu principal </template>
+    <template v-slot:footer> Pied de page </template>
+  </Layout>
+
   <form action="" @submit.prevent="addTodo">
     <fieldset>
       <input v-model="newTodo" type="text" placeholder="Ajouter une tâche" />
@@ -10,18 +18,30 @@
     <ul>
       <li v-for="todo in sortedTodos" :key="todo.date" :class="{ completed: todo.completed }">
         <!-- If todo.completed === true, then we add the class completed-->
-        <label> <input type="checkbox" v-model="todo.completed" />{{ todo.title }} </label>
+        <Checkbox
+          :label="todo.title"
+          @check="(p) => console.log('coché', p)"
+          @uncheck="console.log('décoché')"
+          v-model="todo.completed"
+        />
       </li>
     </ul>
     <label><input type="checkbox" v-model="hideCompleted" />Masquer les tâches complétées</label>
     <p v-if="remainingTodos > 0">
-      Vous avez encore <strong>{{ remainingTodos }}</strong> tâche(s) à faire
+      Vous avez encore <strong>{{ remainingTodos }}</strong> tâche{{
+        remainingTodos > 1 ? 's' : ''
+      }}
+      à faire
     </p>
+    <Checkbox label="Bonjour" />
   </div>
 </template>
 
 <script setup>
 import { computed, ref } from 'vue';
+import Checkbox from './Checkbox.vue'; // Importing the Checkbox component
+import Button from './Button.vue'; // Importing the Button component
+import Layout from './Layout.vue'; // Importing the Layout component
 
 const hideCompleted = ref(false); // This variable is not used in the template, but it can be used to filter the todos
 const newTodo = ref('');
