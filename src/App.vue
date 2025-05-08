@@ -5,20 +5,23 @@
       <button :disabled="!newTodo.trim()" type="submit">Ajouter</button>
     </fieldset>
   </form>
-  <div v-if="todos.length === 0">Vous n'avez pas de tâches à faire</div>
+  <div v-if="remainingTodos === 0"><p>Vous n'avez pas de tâches à faire</p></div>
   <div v-else>
     <ul>
-      <li v-for="todo in sortedTodos()" :key="todo.date" :class="{ completed: todo.completed }">
+      <li v-for="todo in sortedTodos" :key="todo.date" :class="{ completed: todo.completed }">
         <!-- If todo.completed === true, then we add the class completed-->
         <label> <input type="checkbox" v-model="todo.completed" />{{ todo.title }} </label>
       </li>
     </ul>
     <label><input type="checkbox" v-model="hideCompleted" />Masquer les tâches complétées</label>
+    <p v-if="remainingTodos > 0">
+      Vous avez encore <strong>{{ remainingTodos }}</strong> tâche(s) à faire
+    </p>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const hideCompleted = ref(false); // This variable is not used in the template, but it can be used to filter the todos
 const newTodo = ref('');
@@ -48,18 +51,24 @@ const addTodo = () => {
   }
 };
 
-const sortedTodos = () => {
+const sortedTodos = computed(() => {
+  //Computed property helps not to recalculate the value if the dependencies are not changed (auto detects the dependencies)
+  //It will only recalculate when todos or hideCompleted changes
+  //This is a performance optimization
   const sortedTodo = [...todos.value].sort(
-    //Spred operator to avoid mutating the original array, but creating a new one
+    //Spread operator to avoid mutating the original array, but creating a new one
     (a, b) => a.completed - b.completed,
   ); /*Sort by completed status, true is treated as 1
   false is treated as 0*/
   if (hideCompleted.value) {
     return sortedTodo.filter((todo) => todo.completed === false); //Filter the todos to only show the ones that are not completed
-  } else {
-    return sortedTodo;
   }
-};
+  return sortedTodo;
+});
+
+const remainingTodos = computed(() => {
+  return todos.value.filter((todo) => todo.completed === false).length; //Calculates the number of remaining todos
+});
 </script>
 
 <style>
