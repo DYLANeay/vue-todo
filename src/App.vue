@@ -1,4 +1,6 @@
 <template>
+  <button @click="showTimer = !showTimer">Display / Hide</button>
+  <Timer v-if="showTimer" />
   <Button>Entrez vos <strong>tâches</strong> ici</Button>
   <!-- <Layout>
     <template v-slot:header> En-tête </template>
@@ -37,25 +39,26 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import Checkbox from './Checkbox.vue'; // Importing the Checkbox component
 import Button from './Button.vue'; // Importing the Button component
 import Layout from './Layout.vue'; // Importing the Layout component
+import Timer from './Timer.vue';
 
 const hideCompleted = ref(false); // This variable is not used in the template, but it can be used to filter the todos
 const newTodo = ref('');
-const todos = ref([
-  {
-    title: 'Tâche 1',
-    completed: true,
-    date: 1,
-  },
-  {
-    title: 'Tâche 2',
-    completed: false,
-    date: 2,
-  },
-]);
+const todos = ref([]);
+const showTimer = ref(true);
+
+onMounted(async () => {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/todos');
+    const data = await response.json();
+    todos.value = data.map((todo) => ({ ...todo, date: todo.id })); // Fetching the todos from the API and linking the date to the id
+  } catch (error) {
+    console.error('Failed to fetch todos:', error);
+  }
+});
 
 const addTodo = () => {
   const trimmedTodo = newTodo.value.trim();
