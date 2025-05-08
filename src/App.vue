@@ -1,11 +1,11 @@
 <template>
-  <!-- <Button>hey</Button> -->
-  <Layout>
+  <Button>Entrez vos <strong>tâches</strong> ici</Button>
+  <!-- <Layout>
     <template v-slot:header> En-tête </template>
     <template v-slot:aside> Barre latérale </template>
     <template v-slot:main> Contenu principal </template>
     <template v-slot:footer> Pied de page </template>
-  </Layout>
+  </Layout> -->
 
   <form action="" @submit.prevent="addTodo">
     <fieldset>
@@ -33,7 +33,6 @@
       }}
       à faire
     </p>
-    <Checkbox label="Bonjour" />
   </div>
 </template>
 
